@@ -11,10 +11,11 @@ Gem::Specification.new do |spec|
   spec.summary = "Convert US zip codes into timezones."
   spec.description = "A Ruby port of the zipToTz Node.js library. Looks up the IANA " \
                       "timezone name or abbreviation for a US zip code."
-  spec.homepage = "https://github.com/pmmonier/zipToTz"
+  spec.homepage = "https://github.com/ibanez270dx/ziptotz"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
   spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = "#{spec.homepage}/commits/main"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
