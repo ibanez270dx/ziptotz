@@ -9,24 +9,32 @@ module ZipToTz
   # tz.full("33487")  # => "America/New_York"
   # tz.short("33487") # => "EDT"
   class Converter
-    DATA_DIR = File.expand_path("data", __dir__)
-    SHORT_FILE = "timezones_to_zipcodes.yml"
-    FULL_FILE = "timezones_to_zipcodes_full.yml"
+    DATA_FILE = File.expand_path("data/timezones_to_zipcodes.yml", __dir__)
     ZIP_FORMAT = /\A\d{5}\z/
 
-    def short(zip)
-      lookup(zip, short_index)
-    end
+    # The upstream zip list only spans the timezones below, each pinned to a
+    # single abbreviation (Arizona and Hawaii don't observe daylight saving,
+    # so their zones keep a standard-time abbreviation year-round).
+    ABBREVIATIONS = {
+      "America/New_York" => "EDT",
+      "America/Chicago" => "CDT",
+      "America/Denver" => "MDT",
+      "America/Los_Angeles" => "PDT",
+      "America/Phoenix" => "MST",
+      "Pacific/Honolulu" => "HST",
+      "America/Anchorage" => "AKDT"
+    }.freeze
 
     def full(zip)
-      lookup(zip, full_index)
+      self.class.index.fetch(normalize(zip)) { raise NotFoundError, "Not found" }
+    end
+
+    def short(zip)
+      timezone = full(zip)
+      ABBREVIATIONS.fetch(timezone) { raise NotFoundError, "Not found" }
     end
 
     private
-
-    def lookup(zip, index)
-      index.fetch(normalize(zip)) { raise NotFoundError, "Not found" }
-    end
 
     def normalize(zip)
       value = zip.to_s.gsub(/\s/, "")
@@ -35,21 +43,23 @@ module ZipToTz
       value
     end
 
-    def short_index
-      @short_index ||= build_index(SHORT_FILE)
-    end
-
-    def full_index
-      @full_index ||= build_index(FULL_FILE)
-    end
-
-    def build_index(filename)
-      data = YAML.safe_load_file(File.join(DATA_DIR, filename), permitted_classes: [Integer])
-      index = {}
-      data.each do |timezone, zips|
-        zips.each { |zip| index[zip.to_s] = timezone }
+    class << self
+      # Shared across all instances: the zip list is static, so there's no
+      # reason for every Converter.new to re-parse and re-index the data.
+      def index
+        @index ||= build_index
       end
-      index
+
+      private
+
+      def build_index
+        data = YAML.safe_load_file(DATA_FILE, permitted_classes: [Integer])
+        index = {}
+        data.each do |timezone, zips|
+          zips.each { |zip| index[zip.to_s] = timezone }
+        end
+        index.freeze
+      end
     end
   end
 end

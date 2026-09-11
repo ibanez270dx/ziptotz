@@ -49,6 +49,13 @@ rescue ZipToTz::Error => e
 end
 ```
 
+### Data
+
+`short` is derived from `full` via a small abbreviation table, so both are always consistent for
+a given zip code. Upstream ships two separately-maintained data files (full names and
+abbreviations) that can drift out of sync — this port instead keeps a single zip → IANA name
+dataset as the source of truth, and looks up the abbreviation from that.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to
