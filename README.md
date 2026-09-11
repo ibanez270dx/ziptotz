@@ -34,6 +34,30 @@ converter.full("33487")  # => "America/New_York"
 converter.short("33487") # => "EDT"
 ```
 
+### Input format
+
+The zip code must be exactly 5 digits (whitespace is stripped first). ZIP+4 codes are not
+truncated — `"33487-1234"` raises `InvalidZipCodeError` rather than being treated as `"33487"`.
+
+### Supported timezones
+
+Only US zip codes are covered, spanning these seven zones:
+
+| IANA name             | Abbreviation |
+| ---------------------- | ------------ |
+| `America/New_York`     | `EDT`        |
+| `America/Chicago`      | `CDT`        |
+| `America/Denver`       | `MDT`        |
+| `America/Los_Angeles`  | `PDT`        |
+| `America/Phoenix`      | `MST`        |
+| `America/Anchorage`    | `AKDT`       |
+| `Pacific/Honolulu`     | `HST`        |
+
+`short` always returns the abbreviation above, even in months when the zone is actually on
+standard time — e.g. `ZipToTz.short("33487")` returns `EDT` year-round, never `EST`. Arizona and
+Hawaii don't observe daylight saving, so their zones use a standard-time abbreviation instead.
+This is a known simplification inherited from upstream, not a date-aware lookup.
+
 ### Errors
 
 - `ZipToTz::InvalidZipCodeError` — raised if the input isn't exactly 5 digits.
@@ -51,10 +75,8 @@ end
 
 ### Data
 
-`short` is derived from `full` via a small abbreviation table, so both are always consistent for
-a given zip code. Upstream ships two separately-maintained data files (full names and
-abbreviations) that can drift out of sync — this port instead keeps a single zip → IANA name
-dataset as the source of truth, and looks up the abbreviation from that.
+`short` is derived from `full`, so both are always consistent for a given zip code — see
+[AGENTS.md](AGENTS.md) for why and how.
 
 ## Development
 
@@ -64,6 +86,10 @@ experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new
 version, update the version number in `version.rb`, and then run `bundle exec rake release`.
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](LICENSE.txt).
 
 ## Credit
 
