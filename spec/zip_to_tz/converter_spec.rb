@@ -45,6 +45,25 @@ RSpec.describe ZipToTz::Converter do
     end
   end
 
+  describe "territory and nation zips" do
+    {
+      "00601" => ["America/Puerto_Rico", "AST"],   # Puerto Rico
+      "96799" => ["Pacific/Pago_Pago", "SST"],      # American Samoa
+      "96910" => ["Pacific/Guam", "ChST"],          # Guam
+      "96942" => ["Pacific/Guam", "ChST"],          # Chuuk, proxied through Guam's zone
+      "96939" => ["Asia/Tokyo", "JST"],             # Palau, proxied through Tokyo's zone
+      "96941" => ["Pacific/Guadalcanal", "+11"],    # Pohnpei, proxied through Guadalcanal's zone
+      "96944" => ["Pacific/Guadalcanal", "+11"],    # Kosrae, proxied through Guadalcanal's zone
+      "96960" => ["Pacific/Majuro", "+12"],         # Marshall Islands
+      "99801" => ["America/Juneau", "AKDT"]         # Alaska, renamed from America/Anchorage
+    }.each do |zip, (full, short)|
+      it "maps #{zip} to #{full} / #{short}" do
+        expect(converter.full(zip)).to eq(full)
+        expect(converter.short(zip)).to eq(short)
+      end
+    end
+  end
+
   it "shares one index across instances instead of re-parsing per instance" do
     expect(described_class.new.full("33487")).to eq(described_class.new.full("33487"))
     expect(described_class.index).to be(described_class.index)
