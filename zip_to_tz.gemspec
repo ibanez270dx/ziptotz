@@ -5,17 +5,15 @@ require_relative "lib/zip_to_tz/version"
 Gem::Specification.new do |spec|
   spec.name = "zip_to_tz"
   spec.version = ZipToTz::VERSION
-  spec.authors = ["Jeff Miller"]
-  spec.email = ["jeff@salmahealth.com"]
-
-  spec.summary = "Convert US zip codes into timezones."
-  spec.description = "A Ruby port of the zipToTz Node.js library. Looks up the IANA " \
-                      "timezone name or abbreviation for a US zip code."
-  spec.homepage = "https://github.com/ibanez270dx/ziptotz"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.summary = "Convert US zip codes into timezones."
+  spec.description = "A Ruby port of the zipToTz Node.js library. Looks up the IANA timezone name or abbreviation for a US zip code."
+  spec.authors = ["Jeff Miller"]
+  spec.email = ["jeff@humani.se"]
+  spec.homepage = "https://github.com/ibanez270dx/ziptotz"
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["changelog_uri"] = "#{spec.homepage}/commits/main"
+  spec.metadata["changelog_uri"] = "#{spec.homepage}/releases"
+  spec.metadata["source_code_uri"] = spec.homepage
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -29,10 +27,4 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-
-  # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
-
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://guides.rubygems.org/make-your-own-gem/
 end
