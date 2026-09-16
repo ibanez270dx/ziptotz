@@ -41,7 +41,7 @@ truncated — `"33487-1234"` raises `InvalidZipCodeError` rather than being trea
 
 ### Supported timezones
 
-Only US zip codes are covered, spanning these seven zones:
+US zip codes and territories are covered, spanning these zones:
 
 | IANA name             | Abbreviation |
 | ---------------------- | ------------ |
@@ -50,13 +50,28 @@ Only US zip codes are covered, spanning these seven zones:
 | `America/Denver`       | `MDT`        |
 | `America/Los_Angeles`  | `PDT`        |
 | `America/Phoenix`      | `MST`        |
-| `America/Anchorage`    | `AKDT`       |
+| `America/Juneau`       | `AKDT`       |
 | `Pacific/Honolulu`     | `HST`        |
+| `America/Puerto_Rico`  | `AST`        |
+| `Pacific/Pago_Pago`    | `SST`        |
+| `Pacific/Guam`         | `ChST`       |
+| `Asia/Tokyo`           | `JST`        |
+| `Pacific/Guadalcanal`  | `+11`        |
+| `Pacific/Majuro`       | `+12`        |
+
+Every zone above is also a value in Rails' `ActiveSupport::TimeZone::MAPPING`, since most
+consumers of this gem resolve the result through Rails. That's why Alaska zips resolve to
+`America/Juneau` rather than `America/Anchorage` (identical in practice today, but only Juneau
+is Rails-mapped), and why Palau, Chuuk/Yap, and Pohnpei/Kosrae resolve to whichever Rails-mapped
+zone shares their real UTC offset and DST behavior (`Asia/Tokyo`, `Pacific/Guam`, and
+`Pacific/Guadalcanal` respectively) instead of their own distinct IANA zone.
 
 `short` always returns the abbreviation above, even in months when the zone is actually on
-standard time — e.g. `ZipToTz.short("33487")` returns `EDT` year-round, never `EST`. Arizona and
-Hawaii don't observe daylight saving, so their zones use a standard-time abbreviation instead.
-This is a known simplification inherited from upstream, not a date-aware lookup.
+standard time — e.g. `ZipToTz.short("33487")` returns `EDT` year-round, never `EST`. None of the
+zones below `Pacific/Honolulu` observe daylight saving, so they keep a fixed abbreviation
+year-round; `Pacific/Guadalcanal` has no named abbreviation in IANA's tzdata, so it uses its
+numeric UTC offset instead. This is a known simplification inherited from upstream, not a
+date-aware lookup.
 
 ### Errors
 
